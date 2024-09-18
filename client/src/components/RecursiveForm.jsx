@@ -109,32 +109,31 @@ const RecursiveForm = ({ onSave }) => {
       )}
 
       {/* Action buttons */}
-      <div className="flex space-x-4">
-        {currentFieldIndex === null ? (
-          <button
-            onClick={handleAddField}
-            className="bg-blue-500 text-white px-4 py-2 rounded-md"
-          >
-            Add Field
-          </button>
-        ) : (
-          <button
-            onClick={handleAddNestedField}
-            className="bg-green-500 text-white px-4 py-2 rounded-md"
-          >
-            Append to Nested
-          </button>
-        )}
+      <div className="flex flex-col space-y-4 md:flex-row md:space-x-4 md:space-y-0">
+  {currentFieldIndex === null ? (
+    <button
+      onClick={handleAddField}
+      className="bg-blue-500 text-white px-4 py-2 rounded-md w-full md:w-auto text-center"
+    >
+      Add Field
+    </button>
+  ) : (
+    <button
+      onClick={handleAddNestedField}
+      className="bg-green-500 text-white px-4 py-2 rounded-md w-full md:w-auto text-center"
+    >
+      Append to Nested
+    </button>
+  )}
 
-       
-          <button
-            onClick={handleSave}
-            className="bg-indigo-500 text-white px-4 py-2 rounded-md"
-          >
-            Save Field
-          </button>
-       
-      </div>
+  <button
+    onClick={handleSave}
+    className="bg-indigo-500 text-white px-4 py-2 rounded-md w-full md:w-auto text-center"
+  >
+    Save Field
+  </button>
+</div>
+
 
       {/* Display added fields */}
       <div className="mt-6">
