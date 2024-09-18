@@ -1,8 +1,12 @@
 import React, { useState } from "react";
+import { CopyToClipboard } from 'react-copy-to-clipboard';
 import RecursiveForm from "./RecursiveForm";
 
 const JsonGenerator = () => {
   const [jsonStructure, setJsonStructure] = useState({});
+
+  const [textToCopy, setTextToCopy] = useState(''); // The text you want to copy
+  const [copyStatus, setCopyStatus] = useState(false); // To indicate if the text was copied
 
 //   const handleSaveField = (fields) => {
 //     let newStructure = { ...jsonStructure };
@@ -20,6 +24,11 @@ const JsonGenerator = () => {
 //     setJsonStructure(newStructure);
 //   };
 
+const onCopyText = () => {
+    setCopyStatus(true);
+    console.log("textToCopy",JSON.stringify(textToCopy))
+    setTimeout(() => setCopyStatus(false), 1000); // Reset status after 1 seconds
+  };
 
 const handleSaveField = (fields) => {
     let newStructure = { ...jsonStructure }; // Copy the existing JSON structure
@@ -48,6 +57,7 @@ const handleSaveField = (fields) => {
   
     console.log('Updated Structure:', newStructure); // Log the updated structure for debugging
     setJsonStructure(newStructure); // Update the state with the new structure
+    setTextToCopy(JSON.stringify(newStructure));
   };
   
 
@@ -87,6 +97,11 @@ const handleSaveField = (fields) => {
         <pre className="bg-gray-800 text-white p-4 rounded-lg mt-2">
           {JSON.stringify(jsonStructure, null, 2)}
         </pre>
+
+        <CopyToClipboard text={textToCopy} onCopy={onCopyText}>
+        <button className="mt-4 bg-blue-500 text-white px-4 py-2 rounded-md">Copy</button>
+      </CopyToClipboard>
+      {copyStatus && <p className=" text-md text-gray-700">Text copied to clipboard!</p>}
       </div>
     </div>
   );
