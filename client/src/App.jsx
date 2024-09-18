@@ -8,13 +8,13 @@ function App() {
   return (
     <Router>
       <Header />
+      <SpeedInsights/>
       <div className="container mx-auto p-6">
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/json-generator" element={<JsonGenerator />} />
         </Routes>      
       </div>
-      <SpeedInsights/>
     </Router>
   );
 }
