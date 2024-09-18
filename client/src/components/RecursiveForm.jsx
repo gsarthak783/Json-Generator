@@ -19,6 +19,7 @@ const RecursiveForm = ({ onSave }) => {
     };
     console.log(newField);
     setFields([...fields, newField]);
+    console.log("Fields", fields);
     resetForm();
   };
 
