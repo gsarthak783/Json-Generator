@@ -57,7 +57,7 @@ const handleSaveField = (fields) => {
   
     console.log('Updated Structure:', newStructure); // Log the updated structure for debugging
     setJsonStructure(newStructure); // Update the state with the new structure
-    setTextToCopy(JSON.stringify(newStructure));
+    setTextToCopy(JSON.stringify(jsonStructure));
   };
   
 
