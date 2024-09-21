@@ -5,7 +5,7 @@ const RecursiveForm = ({ onSave }) => {
   const [fieldType, setFieldType] = useState("");
   const [content, setContent] = useState("");
   const [fields, setFields] = useState([]);
-  const [currentFieldIndex, setCurrentFieldIndex] = useState(null); // Track the current nested structure
+  const [currentFieldPath, setCurrentFieldPath] = useState([]); // Track the path to the current nested structure
 
   // Handle adding new fields to the main structure
   const handleAddField = () => {
@@ -17,44 +17,50 @@ const RecursiveForm = ({ onSave }) => {
       content: fieldType === "string" || fieldType === "number" ? content : null,
       nestedFields: fieldType === "array" || fieldType === "object" ? [] : null,
     };
-    console.log(newField);
+
     setFields([...fields, newField]);
-    console.log("Fields", fields);
     resetForm();
   };
 
-  // Append nested fields to arrays or objects
-  const handleAppendField = (index) => {
-    setCurrentFieldIndex(index);
+  // Recursive helper to traverse the nested structure based on the path (array of indices)
+  const traverseToNestedField = (field, path) => {
+    if (path.length === 0) return field;
+    const [currentIndex, ...restPath] = path;
+    return traverseToNestedField(field.nestedFields[currentIndex], restPath);
   };
 
-  // Add nested fields within an array or object
+  // Add nested fields within an array or object using current path
   const handleAddNestedField = () => {
-    let updatedFields = [...fields];
-    let currentField = updatedFields[currentFieldIndex];
+    if (!fieldName || !fieldType || currentFieldPath.length === 0) return;
 
-    if (!currentField || !currentField.nestedFields) return;
-
-    currentField.nestedFields.push({
+    const newNestedField = {
       name: fieldName,
       type: fieldType,
       content: fieldType === "string" || fieldType === "number" ? content : null,
       nestedFields: fieldType === "array" || fieldType === "object" ? [] : null,
-    });
+    };
 
-    updatedFields[currentFieldIndex] = currentField;
+    let updatedFields = [...fields];
+    let targetField = traverseToNestedField({ nestedFields: updatedFields }, currentFieldPath);
+
+    targetField.nestedFields.push(newNestedField);
     setFields(updatedFields);
     resetForm();
   };
 
   // Save the nested structure to the main JSON
   const handleSave = () => {
-    if (currentFieldIndex !== null) {
-      setCurrentFieldIndex(null);
+    if (currentFieldPath.length > 0) {
+      setCurrentFieldPath([]);
     } else {
       onSave(fields); // Save the entire form fields
       setFields([]);  // Clear after saving
     }
+  };
+
+  // Append nested field: set path to the field being edited
+  const handleAppendField = (path) => {
+    setCurrentFieldPath(path);
   };
 
   // Reset form inputs
@@ -62,6 +68,31 @@ const RecursiveForm = ({ onSave }) => {
     setFieldName("");
     setFieldType("");
     setContent("");
+  };
+
+  // Recursive render of the field structure
+  const renderFields = (fieldList, path = []) => {
+    return fieldList.map((field, index) => {
+      const currentPath = [...path, index];
+      return (
+        <li key={index} className="border-b border-gray-300 py-2">
+          <strong>{field.name} ({field.type}):</strong> {field.content || "Nested"}
+          {field.type === "array" || field.type === "object" ? (
+            <button
+              className="bg-green-500 text-white px-2 py-1 ml-4"
+              onClick={() => handleAppendField(currentPath)}
+            >
+              Append to {field.name}
+            </button>
+          ) : null}
+          {field.nestedFields && field.nestedFields.length > 0 && (
+            <ul className="ml-6">
+              {renderFields(field.nestedFields, currentPath)}
+            </ul>
+          )}
+        </li>
+      );
+    });
   };
 
   return (
@@ -110,65 +141,35 @@ const RecursiveForm = ({ onSave }) => {
 
       {/* Action buttons */}
       <div className="flex flex-col space-y-4 md:flex-row md:space-x-4 md:space-y-0">
-  {currentFieldIndex === null ? (
-    <button
-      onClick={handleAddField}
-      className="bg-blue-500 text-white px-4 py-2 rounded-md w-full md:w-auto text-center"
-    >
-      Add Field
-    </button>
-  ) : (
-    <button
-      onClick={handleAddNestedField}
-      className="bg-green-500 text-white px-4 py-2 rounded-md w-full md:w-auto text-center"
-    >
-      Append to Nested
-    </button>
-  )}
+        {currentFieldPath.length === 0 ? (
+          <button
+            onClick={handleAddField}
+            className="bg-blue-500 text-white px-4 py-2 rounded-md w-full md:w-auto text-center"
+          >
+            Add Field
+          </button>
+        ) : (
+          <button
+            onClick={handleAddNestedField}
+            className="bg-green-500 text-white px-4 py-2 rounded-md w-full md:w-auto text-center"
+          >
+            Append Field
+          </button>
+        )}
 
-  <button
-    onClick={handleSave}
-    className="bg-indigo-500 text-white px-4 py-2 rounded-md w-full md:w-auto text-center"
-  >
-    Save Field
-  </button>
-</div>
-
+        <button
+          onClick={handleSave}
+          className="bg-indigo-500 text-white px-4 py-2 rounded-md w-full md:w-auto text-center"
+        >
+          Save Field
+        </button>
+      </div>
 
       {/* Display added fields */}
       <div className="mt-6">
         <h3 className="text-lg font-semibold">Added Fields</h3>
         <ul>
-          {fields.map((field, index) => (
-            <li key={index} className="border-b border-gray-300 py-2">
-              <strong>{field.name} ({field.type}):</strong> {field.content || "Nested"}
-              {field.type === "array" || field.type === "object" ? (
-                <button
-                  className="bg-green-500 text-white px-2 py-1 ml-4"
-                  onClick={() => handleAppendField(index)}
-                >
-                  Append to {field.name}
-                </button>
-              ) : null}
-              {field.nestedFields && field.nestedFields.length > 0 && (
-                <ul className="ml-6">
-                  {field.nestedFields.map((nestedField, idx) => (
-                    <li key={idx}>
-                      <strong>{nestedField.name} ({nestedField.type}):</strong> {nestedField.content}
-                      {nestedField.type === "array" || nestedField.type === "object" ? (
-                <button
-                  className="bg-green-500 text-white px-2 py-1 ml-4"
-                  onClick={() => handleAppendField(idx)}
-                >
-                  Append to {nestedField.name}
-                </button>
-              ) : null}
-                    </li>
-                  ))}
-                </ul> 
-              )}
-            </li>
-          ))}
+          {renderFields(fields)}
         </ul>
       </div>
     </div>
