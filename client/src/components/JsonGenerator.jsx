@@ -74,7 +74,7 @@ const handleSaveField = (fields) => {
   };
 
   return (
-    <div className="p-6 bg-gray-100 min-h-screen">
+    <div className="p-6 bg-gray-100 min-h-screen rounded-md">
       <h1 className="text-2xl font-bold mb-4">Dynamic JSON Generator</h1>
 
       {/* RecursiveForm component for adding fields */}
@@ -82,10 +82,34 @@ const handleSaveField = (fields) => {
 
       {/* Display JSON structure */}
       <div className="mt-6">
-       
 
-        {/* Download JSON Button */}
-        <button
+        <h2 className="text-xl font-semibold">Generated JSON Structure</h2>
+
+        {/* <pre className="bg-gray-800 text-white p-4 rounded-lg mt-2">
+          {JSON.stringify(jsonStructure, null, 2)}
+        </pre>
+
+        <CopyToClipboard text={textToCopy} onCopy={onCopyText}>
+        <button className="mt-4 bg-blue-500 text-white px-4 py-2 rounded-md">Copy</button>
+      </CopyToClipboard>
+      {copyStatus && <p className=" text-md text-gray-700">Text copied to clipboard!</p>} */}
+
+
+      {/* Pre container with Copy button */}
+      <div className="relative ">
+        <CopyToClipboard text={jsonStructure} onCopy={onCopyText}>
+          <button className="absolute top-2 right-2 bg-blue-500 text-white px-4 py-2 rounded-md">
+            {copyStatus ? "Copied!" : "Copy"}
+          </button>
+        </CopyToClipboard>
+        <pre className="bg-gray-800 text-white p-4 rounded-lg mt-2">
+        {JSON.stringify(jsonStructure, null, 2)}
+        </pre>
+      </div>
+
+
+       {/* Download JSON Button */}
+       <button
           onClick={handleDownloadJson}
           className="mt-4 bg-blue-500 text-white px-4 py-2 rounded-md"
         >
@@ -93,15 +117,6 @@ const handleSaveField = (fields) => {
         </button>
 
 
-        <h2 className="mt-6 text-xl font-semibold">Generated JSON Structure</h2>
-        <pre className="bg-gray-800 text-white p-4 rounded-lg mt-2">
-          {JSON.stringify(jsonStructure, null, 2)}
-        </pre>
-
-        <CopyToClipboard text={textToCopy} onCopy={onCopyText}>
-        <button className="mt-4 bg-blue-500 text-white px-4 py-2 rounded-md">Copy</button>
-      </CopyToClipboard>
-      {copyStatus && <p className=" text-md text-gray-700">Text copied to clipboard!</p>}
       </div>
     </div>
   );
