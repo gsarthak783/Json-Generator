@@ -57,7 +57,7 @@ const handleSaveField = (fields) => {
   
     console.log('Updated Structure:', newStructure); // Log the updated structure for debugging
     setJsonStructure(newStructure); // Update the state with the new structure
-    setTextToCopy(JSON.stringify(jsonStructure));
+    setTextToCopy(JSON.stringify(newStructure, null, 2));
   };
   
 
@@ -97,7 +97,7 @@ const handleSaveField = (fields) => {
 
       {/* Pre container with Copy button */}
       <div className="relative ">
-        <CopyToClipboard text={jsonStructure} onCopy={onCopyText}>
+        <CopyToClipboard text={textToCopy} onCopy={onCopyText}>
           <button className="absolute top-2 right-2 bg-blue-500 text-white px-4 py-2 rounded-md">
             {copyStatus ? "Copied!" : "Copy"}
           </button>
